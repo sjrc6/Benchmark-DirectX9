@@ -1,5 +1,5 @@
 //#define USETHREADS	//spawn a second renderer thread and use busy message reading for input
-#define MODEZERO		//comment out for human benchmark mode, uncomment for black and white
+//#define MODEZERO		//comment out for human benchmark mode, uncomment for black and white
 //#define FPSLIMIT 4000 //comment out for uncapped FPS
 
 //set these for different viewport resolution, for example
@@ -15,7 +15,7 @@
 //<----------- no need to change below this point ----------->
 
 #include <d3d9.h>
-
+#pragma comment(lib, "d3d9.lib")
 //if linker can't find DirectX SDK, you can use these
 /*#ifdef _M_IX86 //32 bit compile
 #pragma comment (lib, "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/d3d9.lib")
@@ -43,6 +43,7 @@ int state = 0; //0 stats screen, 1 red waiting screen, 2 green
 int errors = 0;
 int click = 0;
 long long lastClick, minClick = 999999999999, maxClick = 0, averageClick = 0, clickSum = 0, clickAmount = 0;
+long long clickList[999] = {};
 #endif
 
 #ifdef USETHREADS
@@ -111,6 +112,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					greenClickTime = std::chrono::high_resolution_clock::now();
 					auto timeDiff = greenClickTime - greenStartTime;
 					lastClick = std::chrono::duration_cast<std::chrono::microseconds>(timeDiff).count();
+					clickList[clickAmount] = lastClick;
 					if (lastClick < minClick) minClick = lastClick;
 					if (lastClick > maxClick) maxClick = lastClick;
 					clickSum += lastClick;
@@ -124,6 +126,9 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					std::cout << "  average click: " << (double)averageClick / 1000 << " ms\n";
 					std::cout << "  successful clicks: " << clickAmount << "\n";
 					std::cout << "  early clicks: " << errors << "\n";
+					for (int i = 0; i < clickAmount; ++i) {
+						std::cout << "  click " << i + 1 << ": " << (double)clickList[i] / 1000 << "ms\n";
+					}
 				}
 #endif
 			}
