@@ -88,7 +88,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 #endif
 #ifndef MODEZERO
 				if (state == 0) {
-					system("CLS"); //clear console
 					state = 1;
 					currentColor = red;
 					//pick a time to transition screen from red to green
@@ -118,6 +117,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 					clickSum += lastClick;
 					clickAmount++;
 					averageClick = clickSum / clickAmount;
+
+					system("CLS"); //clear console
 
 					std::cout << "\n";
 					std::cout << "  last click: " << std::fixed << std::setprecision(1) << (double)lastClick / 1000 << " ms\n";
